@@ -19,11 +19,11 @@ public class TiposUsuarioDAO {
         try{
             Statement s=ConexionBD.getCn().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs=s.executeQuery(sql);
-            
+            return rs;
          
         }
         catch(SQLException e){
-            
+            System.out.println("Error:"+e.getMessage());
         }
         return null;
     }
