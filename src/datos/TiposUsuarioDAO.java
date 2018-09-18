@@ -5,6 +5,7 @@
  */
 package datos;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,10 +15,29 @@ import java.sql.Statement;
  * @author roberto
  */
 public class TiposUsuarioDAO {
-    public ResultSet consultaGeneral(){
-        String sql="select idTipoUsuario ID,NOMBRE from tiposUsuario where estatus='A'";
+    private int paginas;
+    public void cantPaginas(){
+        String sql="select ceil(count(*)/10) paginas from tiposUsuario";
         try{
-            Statement s=ConexionBD.getCn().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            Statement s=ConexionBD.getCn().createStatement();
+            ResultSet rs=s.executeQuery(sql);
+            if(rs.next()){
+                paginas=rs.getInt("paginas");
+            }
+            rs.close();
+            s.close();
+        }
+        catch(SQLException e){
+            System.out.println("Error:"+e.getMessage());
+        }
+    }
+    public ResultSet consultaGeneral(int pagina){
+        String sql="select idTipoUsuario ID,NOMBRE from tiposUsuario where estatus='A'"
+                + " where rownum>=? and rownum<=?";
+        try{
+            PreparedStatement s=ConexionBD.getCn().prepareStatement(sql);
+            s.setInt(1, pagina*10-10);
+            s.setInt(2, pagina*20);
             ResultSet rs=s.executeQuery(sql);
             return rs;
          
